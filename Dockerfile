@@ -67,13 +67,7 @@ RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
 
 RUN pip install --upgrade setuptools grpcio-tools
 
-# Clients and examples require gRPC
-WORKDIR /opt
-RUN git clone -b $(curl -L https://grpc.io/release) https://github.com/grpc/grpc && \
-    cd grpc && \
-    git submodule update --checkout --init && \
-    make -j"$(nproc)" && make -j"$(nproc)" install
-
 WORKDIR /workspace
 COPY . .
 RUN make -j4 -f Makefile.clients all pip
+
