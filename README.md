@@ -55,14 +55,8 @@ sending them to the inference server for inferencing. The python-pil
 package is required by the Python image\_client example.
 
     sudo apt-get update
-    sudo apt-get install build-essential libcurl3-dev libopencv-dev libopencv-core-dev python-pil software-properties-common
-
-Protobuf3 support and gRPC support are required, they will be 
-installed inside the Makefile for you. However, you will need to 
-install the following prerequisites.
-
-    sudo apt-get update
-    sudo apt-get install autoconf automake libtool pkg-config
+    sudo apt-get install build-essential libcurl3-dev libopencv-dev libopencv-core-dev python-pil \
+                         software-properties-common autoconf automake libtool pkg-config
     
 Creating the whl file for the Python client library requires setuptools. 
 And grpcio-tools is required for gRPC support in Python client library.
@@ -70,9 +64,9 @@ And grpcio-tools is required for gRPC support in Python client library.
     pip install --no-cache-dir --upgrade setuptools grpcio-tools
 
 With those prerequisites installed, the C++ and Python client libraries
-and example image\_client application can be built:
+and example image\_client and perf\_client applications can be built:
 
-    make -f Makefile.clients all pip
+    sudo make -f Makefile.clients all pip
 
 Build artifacts are in build/.  The Python whl file is generated in
 build/dist/dist/ and can be installed with a command like the following:
