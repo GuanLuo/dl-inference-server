@@ -47,10 +47,8 @@ RUN apt-get update && \
             libgtest-dev \
             libopencv-dev \
             libopencv-core-dev \
-            libprotobuf-dev \
             libtool \
             pkg-config \
-            protobuf-compiler \
             python$PYVER \
             python$PYVER-dev && \
     ldconfig

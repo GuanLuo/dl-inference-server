@@ -39,23 +39,24 @@ PYTHONDIR   := $(SRCDIR)/clients/python
 
 BDISTDIR    := $(BUILDDIR)/dist
 
-LIBGRPCDIR  := $(shell pwd)/$(BUILDDIR)/temp
-STATIC_LIB  := libgrpc++.a \
-               libgrpc.a
+LIBGRPCDIR  := $(shell pwd)/$(BUILDDIR)/grpc
+LIBGRPC_BASE := libgrpc++.a \
+                libgrpc.a
 LIBGRPC     := $(addprefix $(LIBGRPCDIR)/lib/, $(STATIC_LIB))
+LIBPROTOBUF := $(LIBGRPCDIR)/grpc/libs/opt/protobuf/libprotobuf.a
 
 IMAGE_SRCS  := $(CPPDIR)/image_client.cc
 IMAGE_OBJS  := $(addprefix $(BUILDDIR)/, $(IMAGE_SRCS:%.cc=%.o))
-IMAGE_LDFLAGS := $(LIBGRPC) -L/opt/local/lib -lcurl -lz -lpthread -lopencv_core -lopencv_imgproc \
-                 -lopencv_highgui -lprotobuf -ldl
+IMAGE_LDFLAGS := $(LIBGRPC) $(LIBPROTOBUF) -L/opt/local/lib -lcurl -lz -lpthread -lopencv_core -lopencv_imgproc \
+                 -lopencv_highgui  -ldl
 
 PERF_SRCS   := $(CPPDIR)/perf_client.cc
 PERF_OBJS   := $(addprefix $(BUILDDIR)/, $(PERF_SRCS:%.cc=%.o))
-PERF_LDFLAGS := $(LIBGRPC) -L/opt/local/lib -lcurl -lz -lpthread -lprotobuf -ldl
+PERF_LDFLAGS := $(LIBGRPC) $(LIBPROTOBUF) -L/opt/local/lib -lcurl -lz -lpthread -ldl
 
 LIBREQ_SRCS := $(PYTHONDIR)/crequest.cc
 LIBREQ_OBJS := $(addprefix $(BUILDDIR)/, $(LIBREQ_SRCS:%.cc=%.o))
-LIBREQ_LDFLAGS := $(LIBGRPC) -L/opt/local/lib -lcurl -lz -lprotobuf -ldl
+LIBREQ_LDFLAGS := $(LIBGRPC) $(LIBPROTOBUF) -L/opt/local/lib -lcurl -lz -ldl
 
 CMN_SRCS    := $(CPPDIR)/request.cc $(SRCDIR)/core/model_config.cc
 CMN_OBJS    := $(addprefix $(BUILDDIR)/, $(CMN_SRCS:%.cc=%.o))
@@ -80,7 +81,8 @@ GRPC_SRCS   := $(GRPC_HDRS:.h=.cc)
 GRPC_OBJS   := $(GRPC_SRCS:.cc=.o)
 GRPC_PY     := $(GRPC_HDRS:.grpc.pb.h=_pb2_grpc.py)
 
-PROTOC      := protoc
+PROTOC      := $(LIBGRPCDIR)/grpc/bins/opt/protobuf/protoc
+PROTOBUF_INCLUDE_PATH := $(LIBGRPCDIR)/grpc/third_party/protobuf/src
 
 CFLAGS      += -MMD -MP
 INCS        += -I.
@@ -118,6 +120,7 @@ $(LIBGRPCDIR)/libgrpc_indicator:
 	mkdir -p $(LIBGRPCDIR)
 	git clone -b $(shell curl -L https://grpc.io/release) https://github.com/grpc/grpc $(LIBGRPCDIR)/grpc
 	cd $(LIBGRPCDIR)/grpc && git submodule update --checkout --init && $(MAKE) -j"$(nproc)" prefix=$(LIBGRPCDIR) && $(MAKE) -j"$(nproc)" prefix=$(LIBGRPCDIR) install
+	cp -r $(PROTOBUF_INCLUDE_PATH)/google /usr/local/include/
 	touch $(LIBGRPCDIR)/libgrpc_indicator
 
 protobuf: $(PROTO_HDRS) $(PROTO_SRCS) $(PROTO_PY)
@@ -151,7 +154,7 @@ $(BUILDDIR)/$(SRCDIR)/%.proto: $(SRCDIR)/%.proto
 	sed -i -e 's/src\/core\///' $@
 
 $(BUILDDIR)/$(SRCDIR)/%.pb.cc $(BUILDDIR)/$(SRCDIR)/%.pb.h \
-    $(BUILDDIR)/$(SRCDIR)/%_pb2.py: $(BUILDDIR)/$(SRCDIR)/%.proto
+    $(BUILDDIR)/$(SRCDIR)/%_pb2.py: $(BUILDDIR)/$(SRCDIR)/%.proto $(LIBGRPCDIR)/libgrpc_indicator
 	mkdir -p $(dir $<)
 	$(PROTOC) -I$(dir $<) --cpp_out=$(dir $<) --python_out=$(dir $<) $<
 
