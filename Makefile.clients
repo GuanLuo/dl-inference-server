@@ -42,7 +42,7 @@ BDISTDIR    := $(BUILDDIR)/dist
 LIBGRPCDIR  := $(shell pwd)/$(BUILDDIR)/grpc
 LIBGRPC_BASE := libgrpc++.a \
                 libgrpc.a
-LIBGRPC     := $(addprefix $(LIBGRPCDIR)/lib/, $(STATIC_LIB))
+LIBGRPC     := $(addprefix $(LIBGRPCDIR)/lib/, $(LIBGRPC_BASE))
 LIBPROTOBUF := $(LIBGRPCDIR)/grpc/libs/opt/protobuf/libprotobuf.a
 
 IMAGE_SRCS  := $(CPPDIR)/image_client.cc

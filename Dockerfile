@@ -31,20 +31,13 @@ ARG PYVER=2.7
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-            software-properties-common && \
-    add-apt-repository -y ppa:maarten-fonville/protobuf && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
+            software-properties-common \
             autoconf \
             automake \
             build-essential \
-            clang \
             curl \
             git \
-            libc++-dev \
             libcurl3-dev \
-            libgflags-dev \
-            libgtest-dev \
             libopencv-dev \
             libopencv-core-dev \
             libtool \
