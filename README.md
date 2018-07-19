@@ -66,7 +66,7 @@ And grpcio-tools is required for gRPC support in Python client library.
 With those prerequisites installed, the C++ and Python client libraries
 and example image\_client and perf\_client applications can be built:
 
-    sudo make -f Makefile.clients all pip
+    make -f Makefile.clients all pip
 
 Build artifacts are in build/.  The Python whl file is generated in
 build/dist/dist/ and can be installed with a command like the following:

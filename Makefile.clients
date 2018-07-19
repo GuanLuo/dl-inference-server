@@ -88,6 +88,7 @@ CFLAGS      += -MMD -MP
 INCS        += -I.
 INCS        += -I$(BUILDDIR)
 INCS        += -I$(LIBGRPCDIR)/include
+INCS        += -I$(PROTOBUF_INCLUDE_PATH)
 
 DEPS         = $(IMAGE_OBJS:.o=.d) $(PERF_OBJS:.o=.d) \
                $(CMN_OBJS:.o=.d) $(LIBREQ_OBJS:.o=.d) \
@@ -120,7 +121,6 @@ $(LIBGRPCDIR)/libgrpc_indicator:
 	mkdir -p $(LIBGRPCDIR)
 	git clone -b $(shell curl -L https://grpc.io/release) https://github.com/grpc/grpc $(LIBGRPCDIR)/grpc
 	cd $(LIBGRPCDIR)/grpc && git submodule update --checkout --init && $(MAKE) -j"$(nproc)" prefix=$(LIBGRPCDIR) && $(MAKE) -j"$(nproc)" prefix=$(LIBGRPCDIR) install
-	cp -r $(PROTOBUF_INCLUDE_PATH)/google /usr/local/include/
 	touch $(LIBGRPCDIR)/libgrpc_indicator
 
 protobuf: $(PROTO_HDRS) $(PROTO_SRCS) $(PROTO_PY)
